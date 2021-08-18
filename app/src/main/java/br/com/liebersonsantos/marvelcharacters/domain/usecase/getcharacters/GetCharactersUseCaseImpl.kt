@@ -1,6 +1,6 @@
 package br.com.liebersonsantos.marvelcharacters.domain.usecase.getcharacters
 
-import br.com.liebersonsantos.marvelcharacters.data.MarvelRepository
+import br.com.liebersonsantos.marvelcharacters.data.repository.MarvelRepository
 import br.com.liebersonsantos.marvelcharacters.domain.model.CharactersResponse
 import javax.inject.Inject
 
