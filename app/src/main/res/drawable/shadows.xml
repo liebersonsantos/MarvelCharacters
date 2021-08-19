@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:id="@+id/cover_drawable"
-        android:drawable="@drawable/ic_launcher_foreground"/>
-    <item android:id="@+id/gradient_drawable" >
-        <shape >
-            <gradient
-                android:angle="270"
-                android:centerColor="#00000000"
-                android:startColor="#EE111111"
-                android:endColor="#FF111111"/>
-        </shape>
-    </item>
-
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+    <corners
+        android:radius="10dp" />
+    <gradient
+        android:angle="270"
+        android:centerX="300%"
+        android:startColor="#00000000"
+        android:endColor="#99000000"
+        android:type="linear" />
+    <size
+        android:width="270dp"
+        android:height="60dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#878787" />
+</shape>
