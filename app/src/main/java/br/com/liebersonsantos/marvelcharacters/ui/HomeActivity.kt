@@ -23,25 +23,6 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        observeVMEvents()
-        viewModel.getCharacters(ts().toLong(), apiKey(), hash())
-
     }
 
-    private fun observeVMEvents(){
-        viewModel.response.observe(this){
-            when(it.status){
-                Status.SUCCESS -> {
-                    it.data?.let { response ->
-
-                    }
-
-                }
-                Status.ERROR -> {
-
-                }
-                Status.LOADING -> {}
-            }
-        }
-    }
 }

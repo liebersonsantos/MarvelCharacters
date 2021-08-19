@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import br.com.liebersonsantos.marvelcharacters.core.State
 import br.com.liebersonsantos.marvelcharacters.domain.model.CharactersResponse
 import br.com.liebersonsantos.marvelcharacters.domain.usecase.getcharacters.GetCharactersUseCase
-import br.com.liebersonsantos.marvelcharacters.util.dispatcher.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -40,7 +39,6 @@ class CharactersViewModel @Inject constructor(
                 _response.value = State.success(response)
 
             }catch (throwable: Throwable){
-                _response.value = State.loading(false)
                 _response.value = State.error(throwable)
             }
         }
