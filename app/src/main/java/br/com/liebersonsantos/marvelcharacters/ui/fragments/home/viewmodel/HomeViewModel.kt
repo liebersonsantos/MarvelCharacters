@@ -1,4 +1,4 @@
-package br.com.liebersonsantos.marvelcharacters.ui.viewmodel
+package br.com.liebersonsantos.marvelcharacters.ui.fragments.home.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,7 +19,7 @@ import javax.inject.Named
  * @author lieberson.xsantos@gmail.com
  */
 @HiltViewModel
-class CharactersViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     @Named("io") private val ioDispatcher: CoroutineDispatcher,
     private val getCharactersUseCase: GetCharactersUseCase
 ) : ViewModel() {

@@ -1,26 +1,30 @@
-package br.com.liebersonsantos.marvelcharacters.ui.fragments
+package br.com.liebersonsantos.marvelcharacters.ui.fragments.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
+import br.com.liebersonsantos.marvelcharacters.R
 import br.com.liebersonsantos.marvelcharacters.core.Status
 import br.com.liebersonsantos.marvelcharacters.databinding.FragmentHomeBinding
 import br.com.liebersonsantos.marvelcharacters.ui.adapter.CharactersAdapter
-import br.com.liebersonsantos.marvelcharacters.ui.viewmodel.CharactersViewModel
+import br.com.liebersonsantos.marvelcharacters.ui.fragments.home.viewmodel.HomeViewModel
 import br.com.liebersonsantos.marvelcharacters.util.apiKey
 import br.com.liebersonsantos.marvelcharacters.util.hash
 import br.com.liebersonsantos.marvelcharacters.util.ts
 import dagger.hilt.android.AndroidEntryPoint
 
+const val DETAIL = "DETAIL"
+
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var binding : FragmentHomeBinding
-    private val viewModel: CharactersViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
     private lateinit var charactersAdapter : CharactersAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +41,11 @@ class HomeFragment : Fragment() {
         observeVMEvents()
         viewModel.getCharacters(ts().toLong(), apiKey(), hash())
     }
-
+//binding.progressBar.visibility = if (it.loading == true) View.VISIBLE else View.GONE
     private fun observeVMEvents(){
         viewModel.response.observe(viewLifecycleOwner){
+            if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
+            binding.progressBar.visibility = if (it.loading == true) View.VISIBLE else View.GONE
             when(it.status){
                 Status.SUCCESS -> {
                     it.data?.let { response ->
@@ -49,14 +55,17 @@ class HomeFragment : Fragment() {
                 Status.ERROR -> {
 
                 }
-                Status.LOADING -> {}
+                Status.LOADING -> {
+
+                }
             }
         }
     }
 
     private fun setAdapter(){
-        charactersAdapter = CharactersAdapter {
-            Toast.makeText(activity, it.name, Toast.LENGTH_SHORT).show()
+        charactersAdapter = CharactersAdapter { result ->
+            findNavController().navigate(R.id.action_homeFragment_to_detailFragment,
+            Bundle().apply { putSerializable(DETAIL, result) })
         }
     }
 
