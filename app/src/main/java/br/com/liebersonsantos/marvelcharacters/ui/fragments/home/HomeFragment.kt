@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -58,12 +59,33 @@ class HomeFragment : Fragment() {
                 Status.LOADING -> { }
             }
         }
+
+        viewModel.insert.observe(viewLifecycleOwner) {
+            if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
+            when (it.status) {
+                Status.SUCCESS -> {
+                    it.data?.let { boolean ->
+                        Toast.makeText(activity, "item inserido com sucesso -> $boolean",
+                            Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+                Status.ERROR -> {
+                    Toast.makeText(activity, "erro -> ", Toast.LENGTH_SHORT).show()
+                }
+                Status.LOADING -> {
+                }
+            }
+        }
     }
 
-    private fun setAdapter(){
-        charactersAdapter = CharactersAdapter { result ->
-            findNavController().navigate(R.id.action_homeFragment_to_detailFragment,
-            Bundle().apply { putSerializable(DETAIL, result) })
+    private fun setAdapter() {
+        charactersAdapter = CharactersAdapter(
+            { result ->
+                findNavController().navigate(R.id.action_homeFragment_to_detailFragment,
+                    Bundle().apply { putSerializable(DETAIL, result) })
+            }) { result ->
+            viewModel.insert(result)
         }
     }
 

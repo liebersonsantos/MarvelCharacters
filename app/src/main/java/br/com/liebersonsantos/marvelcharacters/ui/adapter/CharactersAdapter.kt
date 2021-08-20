@@ -1,5 +1,6 @@
 package br.com.liebersonsantos.marvelcharacters.ui.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -13,12 +14,14 @@ import com.bumptech.glide.Glide
  * Created by lieberson on 8/19/21.
  * @author lieberson.xsantos@gmail.com
  */
-class CharactersAdapter(private val itemClick: ((result: Results) -> Unit)) :
-    ListAdapter<Results, CharactersAdapter.AdapterViewHolder>(DIFF_CALLBACK) {
+class CharactersAdapter(
+    private val itemClick: ((result: Results) -> Unit),
+    private val longClick: ((result: Results) -> Unit)
+) : ListAdapter<Results, CharactersAdapter.AdapterViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
         val itemBinding = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AdapterViewHolder(itemBinding, itemClick)
+        return AdapterViewHolder(itemBinding, itemClick, longClick)
     }
 
     override fun onBindViewHolder(holder: AdapterViewHolder, position: Int) {
@@ -27,7 +30,8 @@ class CharactersAdapter(private val itemClick: ((result: Results) -> Unit)) :
 
     class AdapterViewHolder(
         private val itemBinding: ItemBinding,
-        private val itemClick: (result: Results) -> Unit
+        private val itemClick: (result: Results) -> Unit,
+        private val longClick: (result: Results) -> Unit
     ) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
@@ -42,6 +46,12 @@ class CharactersAdapter(private val itemClick: ((result: Results) -> Unit)) :
                 txtTitle.text = results.name
                 itemView.setOnClickListener {
                     itemClick.invoke(results)
+                }
+
+                itemView.setOnLongClickListener {
+                    longClick.invoke(results)
+                    layout.setBackgroundColor(Color.parseColor("#E9CF1A1D"))
+                    return@setOnLongClickListener true
                 }
 
             }
