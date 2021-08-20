@@ -2,6 +2,8 @@ package br.com.liebersonsantos.marvelcharacters.domain.di
 
 import br.com.liebersonsantos.marvelcharacters.domain.usecase.getcharacters.GetCharactersUseCase
 import br.com.liebersonsantos.marvelcharacters.domain.usecase.getcharacters.GetCharactersUseCaseImpl
+import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.CrudDbUseCase
+import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.CrudDbUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,5 +19,8 @@ interface DomainModule {
 
     @Binds
     fun bindGetCharactersUseCase(useCase: GetCharactersUseCaseImpl): GetCharactersUseCase
+
+    @Binds
+    fun bindCrudDbUseCase(insertCharactersDbUseCaseImpl: CrudDbUseCaseImpl): CrudDbUseCase
 
 }

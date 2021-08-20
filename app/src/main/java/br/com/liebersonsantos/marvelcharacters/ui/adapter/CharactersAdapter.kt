@@ -2,8 +2,8 @@ package br.com.liebersonsantos.marvelcharacters.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.com.liebersonsantos.marvelcharacters.databinding.ItemBinding
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results

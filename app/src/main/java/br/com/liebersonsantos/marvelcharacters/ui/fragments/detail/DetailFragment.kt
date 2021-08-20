@@ -1,19 +1,18 @@
 package br.com.liebersonsantos.marvelcharacters.ui.fragments.detail
 
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import br.com.liebersonsantos.marvelcharacters.R
+import br.com.liebersonsantos.marvelcharacters.core.Status
 import br.com.liebersonsantos.marvelcharacters.databinding.FragmentDetailBinding
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results
 import br.com.liebersonsantos.marvelcharacters.ui.fragments.detail.viewmodel.DetailViewModel
@@ -24,8 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
-//    private val viewModel: DetailViewModel by viewModels()
-    private lateinit var detail: Results
+    private val viewModel: DetailViewModel by viewModels()
+    private lateinit var results: Results
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,15 +36,36 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        detail = arguments?.getSerializable(DETAIL) as Results
+        results = arguments?.getSerializable(DETAIL) as Results
 
         setToolbar()
         back()
-        fillDataDetail(detail)
+        fillDataDetail(results)
 
+        observerVMEvents()
 
+        binding.fab.setOnClickListener {
+            viewModel.insert(results)
+        }
 
+    }
 
+    private fun observerVMEvents(){
+        viewModel.insert.observe(viewLifecycleOwner){
+            if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
+            when(it.status){
+                Status.SUCCESS -> {
+                    it.data?.let { boolean ->
+                        Toast.makeText(activity, "item inserido com sucesso -> $boolean", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+                Status.ERROR -> {
+                    Toast.makeText(activity, "erro -> ", Toast.LENGTH_SHORT).show()
+                }
+                Status.LOADING -> {}
+            }
+        }
     }
 
     private fun setToolbar() {

@@ -13,5 +13,4 @@ class GetCharactersUseCaseImpl @Inject constructor(
 ) : GetCharactersUseCase {
     override suspend fun invoke(ts: Long, apiKey: String, hash: String): CharactersResponse =
         marvelRepository.getCharacters(ts, apiKey, hash)
-
 }

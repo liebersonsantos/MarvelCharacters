@@ -1,4 +1,4 @@
-package br.com.liebersonsantos.marvelcharacters.data.di
+package br.com.liebersonsantos.marvelcharacters.domain.di
 
 import br.com.liebersonsantos.marvelcharacters.data.Api
 import br.com.liebersonsantos.marvelcharacters.data.repository.MarvelRepository

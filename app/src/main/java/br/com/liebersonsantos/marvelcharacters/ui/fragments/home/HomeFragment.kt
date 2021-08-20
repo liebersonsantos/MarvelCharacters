@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
         observeVMEvents()
         viewModel.getCharacters(ts().toLong(), apiKey(), hash())
     }
-//binding.progressBar.visibility = if (it.loading == true) View.VISIBLE else View.GONE
+
     private fun observeVMEvents(){
         viewModel.response.observe(viewLifecycleOwner){
             if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
@@ -55,9 +55,7 @@ class HomeFragment : Fragment() {
                 Status.ERROR -> {
 
                 }
-                Status.LOADING -> {
-
-                }
+                Status.LOADING -> { }
             }
         }
     }

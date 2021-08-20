@@ -1,5 +1,7 @@
 package br.com.liebersonsantos.marvelcharacters.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -7,7 +9,9 @@ import java.io.Serializable
  * Created by lieberson on 8/16/21.
  * @author lieberson.xsantos@gmail.com
  */
+@Entity(tableName = "results_table")
 data class Results(
+    @PrimaryKey
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")

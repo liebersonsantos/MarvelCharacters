@@ -1,10 +1,8 @@
 package br.com.liebersonsantos.marvelcharacters.ui.activity
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import br.com.liebersonsantos.marvelcharacters.databinding.ActivityHomeBinding
-import br.com.liebersonsantos.marvelcharacters.ui.fragments.home.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
