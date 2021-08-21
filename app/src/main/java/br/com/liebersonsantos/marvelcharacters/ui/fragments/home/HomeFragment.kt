@@ -3,6 +3,7 @@ package br.com.liebersonsantos.marvelcharacters.ui.fragments.home
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -14,6 +15,7 @@ import br.com.liebersonsantos.marvelcharacters.domain.model.Results
 import br.com.liebersonsantos.marvelcharacters.ui.activity.HomeActivity
 import br.com.liebersonsantos.marvelcharacters.ui.adapter.CharactersAdapter
 import br.com.liebersonsantos.marvelcharacters.ui.fragments.home.viewmodel.HomeViewModel
+import br.com.liebersonsantos.marvelcharacters.util.ConnectionLiveData
 import br.com.liebersonsantos.marvelcharacters.util.apiKey
 import br.com.liebersonsantos.marvelcharacters.util.hash
 import br.com.liebersonsantos.marvelcharacters.util.ts
@@ -27,6 +29,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var charactersAdapter: CharactersAdapter
+    private lateinit var connectionLiveData: ConnectionLiveData
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,8 +44,10 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
         setupToolbar()
 
-        observeVMEvents()
         viewModel.getCharacters(ts().toLong(), apiKey(), hash())
+        connectionLiveData = ConnectionLiveData(requireActivity())
+        observeVMEvents()
+
     }
 
     private fun observeVMEvents() {
@@ -52,12 +57,23 @@ class HomeFragment : Fragment() {
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.let { response ->
+                        if (binding.txtFeedbackUser.isVisible){
+                            binding.txtFeedbackUser.visibility = View.GONE
+                        }
                         setRecyclerView(response.data.results as MutableList<Results>)
                     }
                 }
                 Status.ERROR -> {
+                    binding.txtFeedbackUser.run {
+                        visibility = View.VISIBLE
+                        text = it.error?.message
+                    }
+
                 }
                 Status.LOADING -> {
+                    it?.loading?.let { status ->
+                        binding.progressBar.visibility = if (status) View.VISIBLE else View.GONE
+                    }
                 }
             }
         }
@@ -74,6 +90,21 @@ class HomeFragment : Fragment() {
                     message(binding.rvHome, getString(R.string.bookmarking_error))
                 }
                 Status.LOADING -> {
+                }
+            }
+        }
+
+        connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
+            if (!isNetworkAvailable) {
+                binding.txtFeedbackUser.run {
+                    setRecyclerView(mutableListOf())
+                    visibility = View.VISIBLE
+                    text = "Falha na conexão com a internet."
+                }
+            } else {
+                binding.txtFeedbackUser.run {
+                    visibility = View.GONE
+                    viewModel.getCharacters(ts().toLong(), apiKey(), hash())
                 }
             }
         }
