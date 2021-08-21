@@ -1,10 +1,8 @@
 package br.com.liebersonsantos.marvelcharacters.ui.fragments.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -12,6 +10,8 @@ import androidx.navigation.fragment.findNavController
 import br.com.liebersonsantos.marvelcharacters.R
 import br.com.liebersonsantos.marvelcharacters.core.Status
 import br.com.liebersonsantos.marvelcharacters.databinding.FragmentHomeBinding
+import br.com.liebersonsantos.marvelcharacters.domain.model.Results
+import br.com.liebersonsantos.marvelcharacters.ui.activity.HomeActivity
 import br.com.liebersonsantos.marvelcharacters.ui.adapter.CharactersAdapter
 import br.com.liebersonsantos.marvelcharacters.ui.fragments.home.viewmodel.HomeViewModel
 import br.com.liebersonsantos.marvelcharacters.util.apiKey
@@ -24,39 +24,41 @@ const val DETAIL = "DETAIL"
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private lateinit var binding : FragmentHomeBinding
+    private lateinit var binding: FragmentHomeBinding
     private val viewModel: HomeViewModel by viewModels()
-    private lateinit var charactersAdapter : CharactersAdapter
+    private lateinit var charactersAdapter: CharactersAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+        setupToolbar()
 
-        setAdapter()
-        setRecyclerView()
         observeVMEvents()
         viewModel.getCharacters(ts().toLong(), apiKey(), hash())
     }
 
-    private fun observeVMEvents(){
-        viewModel.response.observe(viewLifecycleOwner){
+    private fun observeVMEvents() {
+        viewModel.response.observe(viewLifecycleOwner) {
             if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
             binding.progressBar.visibility = if (it.loading == true) View.VISIBLE else View.GONE
-            when(it.status){
+            when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.let { response ->
-                        charactersAdapter.submitList(response.data.results)
+                        setRecyclerView(response.data.results as MutableList<Results>)
                     }
                 }
                 Status.ERROR -> {
-
                 }
-                Status.LOADING -> { }
+                Status.LOADING -> {
+                }
             }
         }
 
@@ -64,14 +66,12 @@ class HomeFragment : Fragment() {
             if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
             when (it.status) {
                 Status.SUCCESS -> {
-                    it.data?.let { boolean ->
-                        Toast.makeText(activity, "item inserido com sucesso -> $boolean",
-                            Toast.LENGTH_SHORT).show()
+                    it.data?.let {
+                        message(binding.rvHome, getString(R.string.bookmarking_success))
                     }
-
                 }
                 Status.ERROR -> {
-                    Toast.makeText(activity, "erro -> ", Toast.LENGTH_SHORT).show()
+                    message(binding.rvHome, getString(R.string.bookmarking_error))
                 }
                 Status.LOADING -> {
                 }
@@ -79,8 +79,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setAdapter() {
-        charactersAdapter = CharactersAdapter(
+    private fun setAdapter(results: MutableList<Results>) {
+        charactersAdapter = CharactersAdapter( results,
             { result ->
                 findNavController().navigate(R.id.action_homeFragment_to_detailFragment,
                     Bundle().apply { putSerializable(DETAIL, result) })
@@ -89,10 +89,43 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerView(){
+    private fun setRecyclerView(results: MutableList<Results>) {
+        setAdapter(results)
         binding.rvHome.run {
             setHasFixedSize(true)
             adapter = charactersAdapter
         }
+    }
+
+    private fun setupToolbar() {
+        (activity as HomeActivity).setSupportActionBar(binding.customToolbar)
+        (activity as HomeActivity).supportActionBar?.title = ""
+    }
+
+    private fun message(view: View, message: String) {
+        (activity as HomeActivity).showMessage(view, message)
+    }
+
+    private fun createSearch(menu: Menu) {
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as SearchView
+        searchView.queryHint = getString(R.string.toolbar_search)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                charactersAdapter.filter.filter(newText)
+                return false
+            }
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu, menu)
+        createSearch(menu)
     }
 }

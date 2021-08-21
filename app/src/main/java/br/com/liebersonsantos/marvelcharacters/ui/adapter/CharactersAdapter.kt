@@ -3,21 +3,27 @@ package br.com.liebersonsantos.marvelcharacters.ui.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import br.com.liebersonsantos.marvelcharacters.databinding.ItemBinding
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results
 import com.bumptech.glide.Glide
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by lieberson on 8/19/21.
  * @author lieberson.xsantos@gmail.com
  */
 class CharactersAdapter(
+    results: MutableList<Results>,
     private val itemClick: ((result: Results) -> Unit),
     private val longClick: ((result: Results) -> Unit)
-) : ListAdapter<Results, CharactersAdapter.AdapterViewHolder>(DIFF_CALLBACK) {
+) : RecyclerView.Adapter<CharactersAdapter.AdapterViewHolder>(), Filterable {
+
+    private val dataSet: MutableList<Results> = results
+    private val fullList: ArrayList<Results> = ArrayList(results)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder {
         val itemBinding = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -25,16 +31,16 @@ class CharactersAdapter(
     }
 
     override fun onBindViewHolder(holder: AdapterViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(dataSet[position])
     }
+
+    override fun getItemCount(): Int = dataSet.count()
 
     class AdapterViewHolder(
         private val itemBinding: ItemBinding,
         private val itemClick: (result: Results) -> Unit,
-        private val longClick: (result: Results) -> Unit
-    ) :
+        private val longClick: (result: Results) -> Unit) :
         RecyclerView.ViewHolder(itemBinding.root) {
-
 
         fun bind(results: Results) {
             itemBinding.run {
@@ -59,17 +65,35 @@ class CharactersAdapter(
         }
     }
 
-    companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Results>() {
-            override fun areItemsTheSame(oldItem: Results, newItem: Results): Boolean {
-                return oldItem.id == newItem.id
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList: ArrayList<Results> = ArrayList()
+                if (constraint == null || constraint.count() == 0) {
+                    filteredList.addAll(fullList)
+                } else {
+                    val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
+                    for (item in fullList) {
+                        if (item.name.toLowerCase(Locale.ROOT).contains(
+                                filterPattern
+                            )
+                        ) {
+                            filteredList.add(item)
+                        }
+                    }
+                }
+                val results = FilterResults()
+                results.values = filteredList
+                return results
             }
 
-            override fun areContentsTheSame(oldItem: Results, newItem: Results): Boolean {
-                return oldItem == newItem
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                dataSet.clear()
+                dataSet.addAll(results?.values as Collection<Results>)
+                notifyDataSetChanged()
             }
 
         }
     }
-
 }
