@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/favoritesToolbar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:spanCount="3"
+        app:spanCount="5"
         tools:listitem="@layout/item"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

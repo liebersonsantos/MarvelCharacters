@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,6 +14,7 @@ import br.com.liebersonsantos.marvelcharacters.R
 import br.com.liebersonsantos.marvelcharacters.core.Status
 import br.com.liebersonsantos.marvelcharacters.databinding.FragmentDetailBinding
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results
+import br.com.liebersonsantos.marvelcharacters.ui.activity.HomeActivity
 import br.com.liebersonsantos.marvelcharacters.ui.fragments.detail.viewmodel.DetailViewModel
 import br.com.liebersonsantos.marvelcharacters.ui.fragments.home.DETAIL
 import com.bumptech.glide.Glide
@@ -55,13 +55,13 @@ class DetailFragment : Fragment() {
             if (viewLifecycleOwner.lifecycle.currentState != Lifecycle.State.RESUMED) return@observe
             when(it.status){
                 Status.SUCCESS -> {
-                    it.data?.let { boolean ->
-                        Toast.makeText(activity, "item inserido com sucesso -> $boolean", Toast.LENGTH_SHORT).show()
+                    it.data?.let {
+                        message(binding.fab, "Personagem inserido com sucesso.")
                     }
 
                 }
                 Status.ERROR -> {
-                    Toast.makeText(activity, "erro -> ", Toast.LENGTH_SHORT).show()
+                    message(binding.fab, "Erro ao tentar favoritar personagem.")
                 }
                 Status.LOADING -> {}
             }
@@ -84,7 +84,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-
     private fun fillDataDetail(results: Results) {
         binding.run {
             setImage(results, imgPoster)
@@ -93,6 +92,10 @@ class DetailFragment : Fragment() {
             txtDescription.text = results.description
         }
 
+    }
+
+    private fun message(view: View, message: String) {
+        (activity as HomeActivity).showMessage(view, message)
     }
 
     private fun FragmentDetailBinding.setImage(results: Results, image: ImageView)

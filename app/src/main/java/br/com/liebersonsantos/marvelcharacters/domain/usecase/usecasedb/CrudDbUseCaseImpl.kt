@@ -10,7 +10,7 @@ import javax.inject.Inject
  * @author lieberson.xsantos@gmail.com
  */
 class CrudDbUseCaseImpl @Inject constructor (private val dbRepository: DbRepository): CrudDbUseCase {
-    override suspend fun invoke(results: Results) = dbRepository.deleteCharacter(results)
+    override suspend fun invoke(results: Results) = dbRepository.insertCharacter(results)
     override fun invoke(): LiveData<List<Results>> = dbRepository.getAllCharacters()
     override suspend fun deleteCharactersDb(results: Results) = dbRepository.deleteCharacter(results)
 }
