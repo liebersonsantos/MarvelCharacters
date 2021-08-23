@@ -44,7 +44,7 @@ class FavoritesFragment : Fragment() {
                 results.isNotEmpty() -> favoritesAdapter.submitList(results)
                 else -> {
                     favoritesAdapter.submitList(results)
-                    message(binding.rvFavorites, "Não há personagens favoritados.")
+                    message(binding.rvFavorites, getString(R.string.there_are_no_characters))
                 }
             }
         }

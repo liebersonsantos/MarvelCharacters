@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.liebersonsantos.marvelcharacters.core.State
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results
-import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.CrudDbUseCase
+import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.DeleteCrudDbUseCase
+import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.GetCrudDbUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,20 +22,21 @@ import javax.inject.Named
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     @Named("io") private val ioDispatcher: CoroutineDispatcher,
-    private val crudDbUseCase: CrudDbUseCase
+    private val getCrudDbUseCase: GetCrudDbUseCase,
+    private val deleteCrudDbUseCase: DeleteCrudDbUseCase
 ) : ViewModel() {
 
     private val _delete = MutableLiveData<State<Boolean>>()
     val delete: LiveData<State<Boolean>>
         get() = _delete
 
-    fun getCharacters() = crudDbUseCase.invoke()
+    fun getCharacters() = getCrudDbUseCase.invoke()
 
     fun deleteCharacters(results: Results) = viewModelScope.launch {
         try {
             _delete.value = State.loading(true)
             withContext(ioDispatcher) {
-                crudDbUseCase.deleteCharactersDb(results)
+                deleteCrudDbUseCase.deleteCharactersDb(results)
             }
 
             _delete.value = State.success(true)

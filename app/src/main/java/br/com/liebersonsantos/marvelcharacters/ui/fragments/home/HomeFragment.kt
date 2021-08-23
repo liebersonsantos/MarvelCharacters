@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
                 binding.txtFeedbackUser.run {
                     setRecyclerView(mutableListOf())
                     visibility = View.VISIBLE
-                    text = "Falha na conexão com a internet."
+                    text = context.getString(R.string.connection_failed)
                 }
             } else {
                 binding.txtFeedbackUser.run {

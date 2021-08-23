@@ -56,12 +56,12 @@ class DetailFragment : Fragment() {
             when(it.status){
                 Status.SUCCESS -> {
                     it.data?.let {
-                        message(binding.fab, "Personagem inserido com sucesso.")
+                        message(binding.fab, getString(R.string.character_saved))
                     }
 
                 }
                 Status.ERROR -> {
-                    message(binding.fab, "Erro ao tentar favoritar personagem.")
+                    message(binding.fab, getString(R.string.error_bookmark))
                 }
                 Status.LOADING -> {}
             }

@@ -8,7 +8,7 @@ import br.com.liebersonsantos.marvelcharacters.core.State
 import br.com.liebersonsantos.marvelcharacters.domain.model.CharactersResponse
 import br.com.liebersonsantos.marvelcharacters.domain.model.Results
 import br.com.liebersonsantos.marvelcharacters.domain.usecase.getcharacters.GetCharactersUseCase
-import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.CrudDbUseCase
+import br.com.liebersonsantos.marvelcharacters.domain.usecase.usecasedb.InsertCrudDbUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ import javax.inject.Named
 class HomeViewModel @Inject constructor(
     @Named("io") private val ioDispatcher: CoroutineDispatcher,
     private val getCharactersUseCase: GetCharactersUseCase,
-    private val crudDbUseCase: CrudDbUseCase
+    private val insertCrudDbUseCase: InsertCrudDbUseCase
 ) : ViewModel() {
 
     private val _response = MutableLiveData<State<CharactersResponse>>()
@@ -56,7 +56,7 @@ class HomeViewModel @Inject constructor(
             try {
                 _insert.value = State.loading(true)
                 withContext(ioDispatcher) {
-                    crudDbUseCase(results)
+                    insertCrudDbUseCase(results)
                 }
 
                 _insert.value = State.success(true)
